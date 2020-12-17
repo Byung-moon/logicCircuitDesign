@@ -1,0 +1,364 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx primitives in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity term_vd_mod is
+	port (coin_50,coin_100,coin_500 : in std_logic ; -- 50원, 100원, 500원 동전 입력 신호  
+		coffee				  : in std_logic ; -- 커피 버튼 입력 신호  
+		clk 					  : in std_logic ; -- clock 신호
+		money_out				  : in std_logic ; -- 동전 반환 버튼  
+		rst					  : in std_logic ; -- 리셋 기능 
+		coffee_out           				  : out std_logic; -- 커피 출력 신호  
+		nomoney				   	  : out std_logic; -- 돈 부족 신호
+		cout_50,cout_100,cout_500 : out std_logic -- 50원, 100원, 500원 반환 신호   
+				  			  
+				);
+end term_vd_mod;
+
+architecture Behavioral of term_vd_mod is
+	
+type money_state is (m0,m50,m100,m150,m200,m250,m300,m350,m400,
+							  m450,m500,m550,m600,m650,m700,m750);
+	signal m : money_state;
+	begin	
+      
+		process(coin_50,coin_100,coin_500,clk,rst,coffee)	--  :    
+		 begin 
+			if(rst='1') then
+			 m <= m0;
+			cout_50 <='0';cout_100 <='0';cout_500 <='0';coffee_out <= '0';
+			
+			elsif (clk 'event and clk ='1') then 					        
+				case m is                     
+					when m0 =>
+					 coffee_out <= '0';										
+					 nomoney <='0';
+					 if(money_out='0' and coffee='0') then
+						if(coin_50 ='1')    then
+							m <= m50;cout_50 <='0';						 
+							elsif(coin_100 ='1')then	
+							m <= m100;cout_100 <='0';						 
+						elsif(coin_500 ='1')then
+							m <= m500;cout_500 <='0';						      
+						else 	
+							m <= m0;	cout_50 <='0';cout_100 <='0';cout_500 <='0';	    
+						end if;
+					 elsif(money_out='0' and coffee='1') then		
+						nomoney <='1';coffee_out <='0';m <=m0;
+					 else														
+							m <= m0;	
+							cout_50 <='0';
+							cout_100 <='0';
+							cout_500 <='0';
+							coffee_out <= '0';
+					end if;		
+							
+					when m50 =>
+					 coffee_out <= '0';										
+					 nomoney <='0';
+					 if(money_out='0' and coffee='0') then	
+						if(coin_50 ='1')    then
+							m <= m100;cout_50 <='0'; 
+						elsif(coin_100 ='1')then	
+							m <= m150;cout_100 <='0';
+						elsif(coin_500 ='1')then
+							m <= m550;cout_500 <='0';
+						else 	
+							m <= m50;cout_50 <='0';cout_100 <='0';cout_500 <='0';
+						end if;	
+					 elsif(money_out='0' and coffee='1') then
+						nomoney <= '1'; m <= m50;
+					 else														     
+						m <= m0;	cout_50 <='1';cout_100 <='0';cout_500 <='0';coffee_out <= '0';      
+					end if;																				    
+
+					when m100 =>
+					 coffee_out <= '0';nomoney <='0';
+					 if(money_out='0' and coffee='0') then	
+						if(coin_50 ='1')    then
+							m <= m150;cout_50 <='0';
+						elsif(coin_100 ='1')then	
+							m <= m200;cout_100 <='0';
+						elsif(coin_500 ='1')then
+							m <= m600;cout_500 <='0';
+						else 	
+							m <= m100;	cout_50 <='0';cout_100 <='0';cout_500 <='0';
+						end if;
+					 elsif(money_out='0' and coffee='1') then
+						nomoney <= '1'; m <= m100; coffee_out <= '0';
+					 else
+						m <= m0;	cout_50 <='0';cout_100 <='1';cout_500 <='0';coffee_out <= '0';
+					end if;
+						
+
+					when m150 =>
+					coffee_out <= '0';nomoney <='0';
+					 if(money_out='0' and coffee='0')	then
+						if(coin_50 ='1')    then
+							m <= m200;cout_50 <='0';
+						elsif(coin_100 ='1')then	
+							m <= m250;cout_100 <='0';
+						elsif(coin_500 ='1')then
+							m <= m650;cout_500 <='0';
+						else 	
+							m <= m150;	cout_50 <='0';cout_100 <='0';cout_500 <='0';
+						end if;
+					 elsif(money_out='0' and coffee='1') then
+						nomoney <= '1'; m <= m150; coffee_out <= '0';					    
+					 else
+						m <= m50;	cout_50 <='0';cout_100 <='1';cout_500 <='0';coffee_out <= '0';
+					end if;	
+							
+					when m200 =>
+					coffee_out <= '0';nomoney <='0';
+					 if(money_out ='0' and coffee ='0') then
+						if(coin_50 ='1')    then
+							m <= m250;cout_50 <='0';
+						elsif(coin_100 ='1')then	
+							m <= m300;cout_100 <='0';
+						elsif(coin_500 ='1')then
+							m <= m700;
+							cout_500 <='0';										
+						else 	
+							m <= m200;	cout_50 <='0';cout_100 <='0';cout_500 <='0';
+						end if;
+					 elsif(money_out='0' and coffee='1') then
+						  coffee_out <= '1'; m <= m0;
+					 else
+						m <= m100;	cout_50 <='0';cout_100 <='1';cout_500 <='0';coffee_out <= '0';
+					end if;		
+
+					when m250 =>
+					coffee_out <= '0';nomoney <='0';
+					 if(money_out='0' and coffee='0') then	
+						if(coin_50 ='1')    then
+							m <= m300;cout_50 <='0';
+						elsif(coin_100 ='1')then	
+							m <= m350;cout_100 <='0';
+						elsif(coin_500 ='1')then
+							m <= m750;
+							cout_500 <='0';
+						else 	
+							m <= m250;	cout_50 <='0';cout_100 <='0';cout_500 <='0';
+						end if;	
+					 elsif(money_out='0' and coffee='1') then
+						 coffee_out <= '1'; m <= m50;
+					 else
+						m <= m150;	cout_50 <='0';cout_100 <='1';cout_500 <='0';coffee_out <= '0';
+					end if;	
+
+					when m300 => 
+					coffee_out <= '0';nomoney <='0';
+					 if(money_out='0' and coffee='0') then
+						if(coin_50 ='1')    then
+							m <= m350;cout_50 <='0';
+						elsif(coin_100 ='1')then	
+							m <= m400;cout_100 <='0';
+						elsif(coin_500 ='1')then
+							m <= m300;
+							cout_500 <='1';
+						else 	
+							m <= m300;	cout_50 <='0';cout_100 <='0';cout_500 <='0';coffee_out <= '0';
+						end if;
+					 elsif(money_out='0' and coffee='1') then
+						 coffee_out <= '1'; m <= m100;
+					 else
+						m <= m200;	cout_50 <='0'; cout_100 <='1';cout_500 <='0';coffee_out <= '0';
+					end if;		
+
+					when m350 =>
+					coffee_out <= '0';nomoney <='0';
+					 if(money_out='0' and coffee='0') then
+						if(coin_50 ='1')    then
+							m <= m400;cout_50 <='0';
+						elsif(coin_100 ='1')then	
+							m <= m450;cout_100 <='0';
+						elsif(coin_500 ='1')then
+							m <= m350;
+							cout_500 <='1';
+						else 	
+							m <= m350;	cout_50 <='0';cout_100 <='0';cout_500 <='0';coffee_out <= '0';
+						end if;
+					 elsif(money_out='0' and coffee='1') then
+						coffee_out <='1'; m <= m150;
+					 else
+						m <= m250;	cout_50 <='0';cout_100 <='1';cout_500 <='0';coffee_out <= '0';
+					end if;	
+							
+					when m400 =>
+					coffee_out <= '0';nomoney <='0';
+					 if(money_out='0' and coffee='0') then		
+						if(coin_50 ='1')    then
+							m <= m450;cout_50 <='0';
+						elsif(coin_100 ='1')then	
+							m <= m500;cout_100 <='0';
+						elsif(coin_500 ='1')then
+							cout_500 <='1';
+							m <= m400;
+						else 	
+							m <= m400;	cout_50 <='0';cout_100 <='0';cout_500 <='0';
+						end if;
+					 elsif(money_out='0' and coffee='1') then
+						coffee_out <= '1'; m <=m200;
+					 else
+						m <= m300;	cout_50 <='0';cout_100 <='1';cout_500 <='0';coffee_out <= '0';
+					end if;		
+						
+					when m450 =>
+					coffee_out <= '0';nomoney <='0';
+					 if(money_out='0' and coffee ='0') then
+						if(coin_50 ='1')    then
+							m <= m500;cout_50 <='0';
+						elsif(coin_100 ='1')then	
+							m <= m550;cout_100 <='0';
+						elsif(coin_500 ='1')then
+							m <= m450;
+							cout_500 <='1';	
+						else 	
+							m <= m450;	cout_50 <='0';cout_100 <='0';cout_500 <='0';
+						end if;
+					 elsif(money_out='0' and coffee='1') then
+						coffee_out <= '1'; m <=m250;
+					 else
+						m <= m350;	cout_50 <='0';cout_100 <='1';cout_500 <='0';coffee_out <= '0';
+					end if;		
+							
+					when m500 =>
+					coffee_out <='0';nomoney <='0';
+					 if(money_out='0' and coffee ='0') then
+						if(coin_50 ='1')    then
+							m <= m550;cout_50 <='0';
+						elsif(coin_100 ='1')then	
+							m <= m600;cout_100 <='0';
+						elsif(coin_500 ='1')then
+							m <= m500;
+							cout_500 <= '1';	
+						else 	
+							m <= m500;	cout_50 <='0';cout_100 <='0';cout_500 <='0';
+						end if;
+					 elsif(money_out='0' and coffee='1') then
+						coffee_out <= '1'; m <=m300;
+					 else
+						m <= m0;	cout_50 <='0';cout_100 <='0';cout_500 <='1';coffee_out <= '0';
+					end if;		
+
+					when m550 =>
+					coffee_out <='0';nomoney <='0';
+					 if(money_out='0' and coffee='0')then
+						if(coin_50 ='1')    then
+							m <= m600;cout_50 <='0';
+						elsif(coin_100 ='1')then	
+							m <= m650;cout_100 <='0';
+						elsif(coin_500 ='1')then
+							m <= m550;
+							cout_500 <='1';	
+						else 	
+							m <= m550;	cout_50 <='0';cout_100 <='0';cout_500 <='0';
+						end if;
+					 elsif(money_out='0' and coffee='1') then
+						coffee_out <= '1'; m <=m350;
+					 else
+						m <= m50;	cout_50 <='0';cout_100 <='0';cout_500 <='1';coffee_out <= '0';
+					end if;			
+
+					when m600 =>
+					coffee_out <='0';nomoney <='0';
+					 if(money_out='0' and coffee='0') then
+						if(coin_50 ='1')    then
+							m <= m650;cout_50 <='0';
+						elsif(coin_100 ='1')then	
+							m <= m700;
+							cout_100 <='0';
+						elsif(coin_500 ='1')then
+							m <= m600;
+							cout_500 <='1';
+						else 	
+							m <= m600;	cout_50 <='0';cout_100 <='0';cout_500 <='0';
+						end if;
+				    elsif(money_out='0' and coffee='1') then
+						coffee_out <= '1'; m <=m400;
+					 else
+						m <= m100;	cout_50 <='0';cout_100 <='0';cout_500 <='1';coffee_out <= '0';
+					end if;			
+
+					when m650 =>
+					coffee_out <='0';nomoney <='0';
+					 if(money_out='0' and coffee='0') then
+						if(coin_50 ='1')    then
+							m <= m700;
+							cout_50 <='0';
+						elsif(coin_100 ='1')then	
+							m <= m750;
+							cout_100<='0';
+						elsif(coin_500 ='1')then
+							m <= m650; 
+							cout_500 <='1';
+						else 	
+							m <= m650;	cout_50 <='0';cout_100 <='0';cout_500 <='0';
+						end if;
+					 elsif(money_out='0' and coffee='1') then
+						coffee_out <= '1'; m <=m450;
+					 else
+						m <= m150;	cout_50 <='0';cout_100 <='0';cout_500 <='1';coffee_out <= '0';
+					end if;	
+
+					when m700 =>
+					coffee_out <= '0';nomoney <='0';
+					 if(money_out='0' and coffee='0') then
+						if(coin_50 ='1')    then
+							m <= m750; 
+							cout_50 <='0';
+						elsif(coin_100 ='1')then	
+							m <= m700; 
+							cout_100 <='1';
+						elsif(coin_500 ='1')then
+							m <= m700;
+							cout_500 <='1';
+						else 	
+							m <= m700;	cout_50 <='0';cout_100 <='0';cout_500 <='0';coffee_out <= '0';
+						end if;
+					 elsif(money_out='0' and coffee='1') then
+						 coffee_out <= '1'; m <= m500;
+					 else
+						m <= m200;	cout_50 <='0'; cout_100 <='0';cout_500 <='1';coffee_out <= '0';
+					end if;
+
+					when m750 =>
+					coffee_out <= '0';nomoney <='0';
+					 if(money_out='0' and coffee='0') then
+						if(coin_50 ='1')    then
+							m <= m750; 
+							cout_50 <='1';
+						elsif(coin_100 ='1')then	
+							m <= m750; 
+							cout_100 <='1';
+						elsif(coin_500 ='1')then
+							m <= m750;
+							cout_500 <='1';
+						else 	
+							m <= m750;	cout_50 <='0';cout_100 <='0';cout_500 <='0';coffee_out <= '0';
+						end if;
+					 elsif(money_out='0' and coffee='1') then
+						 coffee_out <= '1'; m <= m550;
+					 else
+						m <= m250;	cout_50 <='0'; cout_100 <='0';cout_500 <='1';coffee_out <= '0';
+					end if;			
+						 
+								
+			
+				end case; 
+			end if;
+		 	
+		
+		end process;
+
+end Behavioral;
+
