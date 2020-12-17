@@ -9,7 +9,7 @@
 
 ### 주제
 
-  **Finite State Machine을 이용하여 커피 자판기 만들기**
+  - **Finite State Machine을 이용하여 커피 자판기 만들기**
   　
    　
     　
