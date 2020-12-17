@@ -20,14 +20,14 @@
 
    ```
    entity term_vd_mod is
-          port (coin_50,coin_100,coin_500 : in std_logic ;          -- 50원, 100원, 500원 동전 입력 신호  
-                coffee			  : in std_logic ;          -- 커피 버튼 입력 신호  
-                clk 			  : in std_logic ;          -- clock 신호
-                money_out		  : in std_logic ;          -- 동전 반환 버튼  
-                rst			  : in std_logic ;          -- 리셋 기능 
-                coffee_out		  : out std_logic;          -- 커피 출력 신호  
-                nomoney			  : out std_logic;          -- 돈 부족 신호
-                cout_50,cout_100,cout_500 : out std_logic           -- 50원, 100원, 500원 반환 신호   				  			  
+          port (coin_50,coin_100,coin_500 : in std_logic ;          -- 50원, 100원, 500원 동전 입력 신호    
+                coffee			  : in std_logic ;          -- 커피 버튼 입력 신호    
+                clk 			  : in std_logic ;          -- clock 신호  
+                money_out		  : in std_logic ;          -- 동전 반환 버튼    
+                rst			  : in std_logic ;          -- 리셋 기능   
+                coffee_out		  : out std_logic;          -- 커피 출력 신호    
+                nomoney			  : out std_logic;          -- 돈 부족 신호  
+                cout_50,cout_100,cout_500 : out std_logic           -- 50원, 100원, 500원 반환 신호     				  			  
 				        );
    ```
 
